@@ -9,7 +9,7 @@ const bcryptjs = require("bcryptjs");
     "message": "Geçemezsiniz!"
   }
 */
-function sinirli() {
+function sinirli(req, res, next) {
   try {
     if (req.session && req.session.user_id > 0) {
       next();
@@ -29,19 +29,18 @@ function sinirli() {
     "message": "Username kullaniliyor"
   }
 */
-function usernameBostami() {
-  async function usernameBostami(req, res, next) {
-    try {
-      let { username } = req.body;
-      const isExist = await userModel.goreBul({ username: username });
-      if (isExist && isExist.length > 0) {
-        res.status(422).json({ message: "Username kullaniliyor" });
-      } else {
-        next();
-      }
-    } catch (error) {
-      next(error);
+//register
+async function usernameBostami(req, res, next) {
+  try {
+    let { username } = req.body;
+    const isExist = await userModel.goreBul({ username: username });
+    if (isExist && isExist.length > 0) {
+      res.status(422).json({ message: "Username kullaniliyor" });
+    } else {
+      next();
     }
+  } catch (error) {
+    next(error);
   }
 }
 
@@ -53,7 +52,8 @@ function usernameBostami() {
     "message": "Geçersiz kriter"
   }
 */
-async function usernameVarmi() {
+//Loginde kullanılacak.
+async function usernameVarmi(req, res, next) {
   try {
     let { username } = req.body;
     const isExist = await userModel.goreBul({ username: username });
@@ -89,7 +89,8 @@ async function usernameVarmi() {
     "message": "Şifre 3 karakterden fazla olmalı"
   }
 */
-function sifreGecerlimi() {
+//Login ve register
+function sifreGecerlimi(req, res, next) {
   try {
     let { password } = req.body;
     if (!password || password.length < 3) {
@@ -101,7 +102,7 @@ function sifreGecerlimi() {
     next(error);
   }
 }
-
+//Login ve Register
 function checkPayload(req, res, next) {
   try {
     let { username, password } = req.body;
@@ -114,6 +115,7 @@ function checkPayload(req, res, next) {
     next(error);
   }
 }
+
 // Diğer modüllerde kullanılabilmesi için fonksiyonları "exports" nesnesine eklemeyi unutmayın.
 module.exports = {
   usernameBostami,
